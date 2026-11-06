@@ -52,7 +52,7 @@ async function request(path, options = {}) {
   return data;
 }
 function App() {
-  const [token, setToken] = useState(() => localStorage.getItem('project_token') || '');
+  const [token, setToken] = useState(() => localStorage.getItem('scholarship_token') || '');
   const [user, setUser] = useState(null);
   const [mode, setMode] = useState('login');
   const [auth, setAuth] = useState({ name: '', email: '', password: '' });
@@ -69,12 +69,12 @@ function App() {
     ]);
     setUser(profile); setItems(rows);
   }
-  useEffect(() => { if (token) load().catch(e => { setError(e.message); localStorage.removeItem('project_token'); setToken(''); }); }, [token]);
+  useEffect(() => { if (token) load().catch(e => { setError(e.message); localStorage.removeItem('scholarship_token'); setToken(''); }); }, [token]);
   async function submitAuth(e) {
     e.preventDefault(); setBusy(true); setError('');
     try {
       const result = await request(mode === 'register' ? '/api/auth/register' : '/api/auth/login', { method: 'POST', body: JSON.stringify(auth) });
-      localStorage.setItem('project_token', result.token); setUser(result.user); setToken(result.token);
+      localStorage.setItem('scholarship_token', result.token); setUser(result.user); setToken(result.token);
     } catch (e) { setError(e.message); } finally { setBusy(false); }
   }
   async function submitItem(e) {
@@ -97,7 +97,7 @@ function App() {
       setComment({ ...comment, [item.id]: '' }); await load(); setNotice(config.type === 'food' ? 'Donation claimed.' : config.type === 'scholarship' ? 'Application submitted.' : 'Comment added.');
     } catch (e) { setError(e.message); }
   }
-  function logout() { localStorage.removeItem('project_token'); setToken(''); setUser(null); setItems([]); }
+  function logout() { localStorage.removeItem('scholarship_token'); setToken(''); setUser(null); setItems([]); }
   if (!token) return <main className="auth"><section className="auth-card"><div className="brand-mark">◎</div><p className="eyebrow">COMMUNITY PLATFORM</p><h1>{config.title}</h1><p className="muted">{config.short}</p><form onSubmit={submitAuth}>
     {mode === 'register' && <label>Your name<input required value={auth.name} onChange={e=>setAuth({...auth,name:e.target.value})}/></label>}
     <label>Email<input type="email" required value={auth.email} onChange={e=>setAuth({...auth,email:e.target.value})}/></label>
